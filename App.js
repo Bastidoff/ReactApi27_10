@@ -114,7 +114,7 @@ export default function App(){
 
 
   useEffect(() => {
-    //getUsers();
+    getClientes();
   }, []);
 
   return (
@@ -128,12 +128,12 @@ export default function App(){
             <TouchableOpacity 
               style={[styles.buttons, {backgroundColor: item.id%2==1 ? "orange" : "gray"}]}
               onPress={()=>{
-                if(confirm(`¿Está seguro de Eliminar el usuario ${item.name}, ${item.username}?`)){
+                if(confirm(`¿Está seguro de Eliminar el usuario ${item.nombre} ${item.apellidos}?`)){
                   alert("Cliente borrado")
                 }
               }}
               >
-              <Text>{item.name}</Text>
+              <Text>{item.nombre} {item.apellidos}</Text>
             </TouchableOpacity>
             
           )}
