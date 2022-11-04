@@ -1,0 +1,193 @@
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, FlatList, Text, View, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import axios from 'axios'
+
+export default function App() {
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const [nombre, setNombre] = useState('');
+  const [apellidos, setApellidos] = useState('');
+  const [sid, setId] = useState('');
+
+  const getClientes = async () => {
+    try{
+      const url = `http://192.168.1.9:3000/api/clientes`;
+      const response = await axios.get(url);
+      setData(response.data)
+  
+    }
+    catch(error){
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
+  };
+
+  const getClientesPorId = async (id) => {
+    try{
+      const url = `http://192.168.1.9:3000/api/clientes/${id}`;
+      const response = await axios.get(url);
+      //setData(response.data)
+      setNombre(response.data.nombre);
+      setApellidos(response.data.apellidos);
+    }
+    catch(error){
+      console.log(error)
+    }
+    finally{
+      setLoading(false)
+    }
+  };
+
+
+  useEffect(() => {
+    getClientes();
+  }, []);
+
+  const saveCliente = async () => {
+    if (!nombre.trim() || !apellidos.trim()) {
+      alert("Nombre y usuario inválido");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await axios.post(`http://192.168.1.9:3000/api/clientes`, {
+        nombre,
+        apellidos,
+      });
+      alert("Cliente agregado correctamente ...")
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoading(false);
+    }
+  };
+
+  const updateCliente = async (id) => {
+    if (!nombre.trim() || !apellidos.trim()) {
+      alert("Nombre y usuario inválido");
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await axios.put(`http://192.168.1.9:3000/api/clientes/${id}`, {
+        nombre,
+        apellidos,
+      });
+      alert("Cliente actualizado correctamente ...")
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoading(false);
+    }
+  };
+
+  const deleteCliente = async (id) => {
+    try {
+      const response = await axios.delete(`http://192.168.1.9:3000/api/clientes/${id}`, {
+        nombre,
+        apellidos,
+      });
+      alert("Cliente Eliminado exitosamente ...")
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setLoading(false);
+    }
+  };
+
+  return (
+    <View style={{ flex: 1, padding: 24 }}>
+      <View>
+        <TouchableOpacity
+          style={{ backgroundColor: 'green' }}
+          onPress={()=>getClientes()}
+          >
+          <Text style={{color:'white'}}>Listar Clientes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ backgroundColor: 'green',marginTop:10, marginBottom:5}}
+          onPress={saveCliente}
+          >
+          <Text style={{color:'white'}}>Guardar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ backgroundColor: 'green',marginTop:10, marginBottom:5}}
+          onPress={()=>updateCliente(sid)}
+          >
+          <Text style={{color:'white'}}>Actualizar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ backgroundColor: 'green',marginTop:10, marginBottom:5}}
+          onPress={()=>deleteCliente(sid)}
+          >
+          <Text style={{color:'white'}}>Eliminar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ backgroundColor: 'maroon',marginTop:10, marginBottom:5}}
+          onPress={()=>getClientesPorId(sid)}
+          >
+          <Text style={{color:'white'}}>Buscar por Id</Text>
+        </TouchableOpacity>
+      </View>
+      <View>
+      <View style={styles.wrapper}>
+      <TextInput
+            placeholder="Id del Cliente a Buscar"
+            placeholderTextColor="orange"
+            style={styles.input}
+            value={sid}
+            onChangeText={ sid => setId(sid)}
+          />
+          <TextInput
+            placeholder="Nombre"
+            placeholderTextColor="orange"
+            style={styles.input}
+            value={nombre}
+            //editable={!isLoading}
+            onChangeText={ nombre => setNombre(nombre)}
+          />
+          <TextInput
+            placeholder="Apellidos"
+            placeholderTextColor="red"
+            style={styles.input}
+            value={apellidos}
+            onChangeText={ apellidos => setApellidos(apellidos)}
+          />
+        </View>
+      </View>
+      {isLoading ? <ActivityIndicator size="large"/> : (
+        <FlatList
+          data={data}
+          keyExtractor={({ id }, index) => id}
+          renderItem={({ item }) => (
+            <Text>{item._id} - {item.nombre} - {item.apellidos}</Text>
+          )}
+        />
+      )}
+          
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input: {
+    borderWidth: 2,
+    borderColor: "grey",
+    minWidth: 200,
+    textAlignVertical: "center",
+    paddingLeft: 10,
+    borderRadius: 20,
+  }
+});
+
