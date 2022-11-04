@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { ActivityIndicator, FlatList, Text, View, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
 import axios from 'axios';
 
 export default function App(){
@@ -8,6 +8,7 @@ export default function App(){
 
   const [nombre, setNombre] = useState('');
   const [apellidos, setApellidos] = useState('');
+  const [sid, setSid] = useState('');
 /* 
   const getUsers = async () => {
      try {
@@ -119,6 +120,37 @@ export default function App(){
 
   return (
     <View style={{ flex: 1, padding: 24 }}>
+      <TouchableOpacity
+        style={[styles.buttons, {backgroundColor:"green"}]}
+        onPress={()=>getClientePorID(sid)}
+        >
+          <Text style={{color:"yellow"}}>Buscar por id</Text>
+
+      </TouchableOpacity>
+
+      <View>
+        <TextInput
+        style={styles.inputs}
+        placeholder="Ingrese ID a buscar"
+        onChangeText={sid => setSid(sid)}
+        value={sid}
+        ></TextInput>
+
+<TextInput
+        style={styles.inputs}
+        placeholder="Ingrese Nombre"
+        onChangeText={nombre => setNombre(nombre)}
+        value={nombre}
+        ></TextInput>
+
+<TextInput
+        style={styles.inputs}
+        placeholder="Ingrese Aprellidos"
+        onChangeText={apellidos => setApellidos(apellidos)}
+        value={apellidos}
+        ></TextInput>
+      </View>
+
       {isLoading ? <ActivityIndicator size="large" color="purple"/> : (
         <FlatList
           data={data}
@@ -158,5 +190,12 @@ const styles = StyleSheet.create({
     alignItems:'items',
     height:40,
     marginBottom:10
+  },
+  inputs:{
+    borderColor:"green",
+    borderRadius:10,
+    marginTop:5,
+    textAlign:"center",
+    padding:5
   }
 });  
